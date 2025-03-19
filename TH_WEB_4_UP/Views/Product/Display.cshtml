@@ -1,0 +1,49 @@
+﻿@model TH_WEB_4_UP.Models.Product
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<h2 class="text-center text-danger">@Model.Name</h2>
+<div class="row mb-4">
+    <div class="col-md-8">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid mb-3" />
+        }
+    </div>
+    <div class="col-md-4">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Specification</th>
+                    <th scope="col">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Category</td>
+                    <td>@Model.CategoryId</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>@Model.Name</td>
+                </tr>
+                <tr>
+                    <td>Price</td>
+                    <td>@Model.Price.ToString("C")</td>
+                </tr>
+                <!-- Add more specifications as needed -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="card mb-4">
+    <div class="card-body">
+        <h3 class="card-title text-danger">Price: @Model.Price.ToString("C")</h3>
+        <p class="card-text">@Model.Description</p>
+    </div>
+</div>
+<a class="btn btn-secondary mt-3" href="/Product/Index">Back to List</a>
+
+
+
