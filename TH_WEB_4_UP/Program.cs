@@ -1,13 +1,24 @@
-﻿using TH_WEB_4_UP.Repository;
+﻿using Microsoft.EntityFrameworkCore;
+using TH_WEB_4_UP.Models;
+using TH_WEB_4_UP.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<IProductRepository, MockProductRepository>();
-builder.Services.AddSingleton<ICategoryRepository, MockCategoryRepository>();
+builder.Services.AddScoped<IProductRepository, EFProductRepository>();
+builder.Services.AddScoped<ICategoryRepository, EFCategoryRepository>();
 
 var app = builder.Build();
+
+// Seed the database with categories
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var categoryRepository = services.GetRequiredService<ICategoryRepository>();
+    await categoryRepository.SeedCategoriesAsync();
+}
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

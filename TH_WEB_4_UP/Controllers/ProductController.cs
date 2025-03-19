@@ -2,7 +2,6 @@
 using TH_WEB_4_UP.Repository;
 using TH_WEB_4_UP.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Xml.Linq;
 
 namespace TH_WEB_4_UP.Controllers
 {
@@ -15,14 +14,17 @@ namespace TH_WEB_4_UP.Controllers
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
-        public IActionResult Add()
+
+        public async Task<IActionResult> Add()
         {
-            var categories = _categoryRepository.GetAllCategories();
+            var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View();
         }
+
         [HttpPost]
-        public async Task<IActionResult> Add(Product product, IFormFile imageUrl, List<IFormFile> imageUrls)
+        public async Task<IActionResult> Add(Product product, IFormFile
+imageUrl)
         {
             if (ModelState.IsValid)
             {
@@ -30,22 +32,13 @@ namespace TH_WEB_4_UP.Controllers
                 {
                     product.ImageUrl = await SaveImage(imageUrl);
                 }
-                if (imageUrls != null)
-                {
-                    product.ImageUrls = new List<string>();
-                    foreach (var file in imageUrls)
-                    {
-                        product.ImageUrls.Add(await SaveImage(file));
-                    }
-                }
-                _productRepository.Add(product);
-                return RedirectToAction("Index");
+                await _productRepository.AddAsync(product);
+                return RedirectToAction(nameof(Index));
             }
-            var categories = _categoryRepository.GetAllCategories();
+            var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(product);
         }
-
         private async Task<string> SaveImage(IFormFile image)
         {
             var savePath = Path.Combine("wwwroot/images", image.FileName);
@@ -56,37 +49,40 @@ namespace TH_WEB_4_UP.Controllers
             return "/images/" + image.FileName;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            var products = _productRepository.GetAll();
+            var products = await _productRepository.GetAllAsync();
             return View(products);
         }
-        public IActionResult Display(int id)
+
+        public async Task<IActionResult> Display(int id)
         {
-            var products = _productRepository.GetById(id);
-            if(products == null)
-            {
-                return NotFound();
-            }
-            return View(products);
-        }
-        public IActionResult Update(int id)
-        {
-            var product = _productRepository.GetById(id);
+            var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
-            var categories = _categoryRepository.GetAllCategories();
+            return View(product);
+        }
+
+        public async Task<IActionResult> Update(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound();
+            }
+            var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(product);
         }
+
         [HttpPost]
         public async Task<IActionResult> Update(Product product, IFormFile imageUrl, List<IFormFile> imageUrls)
         {
             if (ModelState.IsValid)
             {
-                var existingProduct = _productRepository.GetById(product.Id);
+                var existingProduct = await _productRepository.GetByIdAsync(product.Id);
                 if (existingProduct == null)
                 {
                     return NotFound();
@@ -114,17 +110,17 @@ namespace TH_WEB_4_UP.Controllers
                     product.ImageUrls = existingProduct.ImageUrls;
                 }
 
-                _productRepository.Update(product);
+                await _productRepository.UpdateAsync(product);
                 return RedirectToAction("Index");
             }
-            var categories = _categoryRepository.GetAllCategories();
+            var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(product);
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var product = _productRepository.GetById(id);
+            var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
@@ -133,14 +129,14 @@ namespace TH_WEB_4_UP.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        public IActionResult DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var product = _productRepository.GetById(id);
+            var product = await _productRepository.GetByIdAsync(id);
             if (product == null)
             {
                 return NotFound();
             }
-            _productRepository.Delete(id);
+            await _productRepository.DeleteAsync(id);
             return RedirectToAction("Index");
         }
     }
