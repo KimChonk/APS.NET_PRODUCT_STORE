@@ -28,9 +28,19 @@ namespace TH_WEB_4_UP.Repository
         }
         public async Task UpdateAsync(Product product)
         {
-            _context.products.Update(product);
+            var existingProduct = await _context.products.FindAsync(product.Id);
+            if (existingProduct != null)
+            {
+                _context.Entry(existingProduct).CurrentValues.SetValues(product);
+            }
+            else
+            {
+                _context.products.Update(product);
+            }
             await _context.SaveChangesAsync();
         }
+
+
         public async Task DeleteAsync(int id)
         {
             var product = await _context.products.FindAsync(id);
