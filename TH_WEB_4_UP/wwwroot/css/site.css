@@ -48,17 +48,47 @@ body {
     background-color: #dc3545; /* Danger color for the jumbotron */
     color: white;
 }
+.product-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}
 
 .card {
     margin-bottom: 20px;
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
     .card img {
         height: 200px;
         object-fit: cover;
     }
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.card-text {
+    flex-grow: 1;
+}
+
+    .card-text.text-danger {
+        font-size: 1.1rem;
+    }
+.product-row {
+    margin-bottom: 30px; /* Adjust the value as needed */
+}
 
 .text-danger {
     color: #dc3545 !important;
