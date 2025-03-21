@@ -246,3 +246,37 @@ body {
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+.custom-navbar {
+    background-color: #ff0000; /* Red background */
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+    .custom-navbar .navbar-brand {
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+        .custom-navbar .navbar-brand:hover {
+            color: #dcdcdc;
+        }
+
+.custom-nav-link {
+    color: #ffffff;
+    font-weight: bold;
+    transition: color 0.4s ease;
+}
+
+    .custom-nav-link:hover {
+        color: #ffc107; /* Blue color on hover */
+    }
+
+    .custom-nav-link.active {
+        color: #dcdcdc;
+        background-color: #5a6268;
+        border-radius: 5px;
+    }
+
+.navbar-nav {
+    margin: 0 auto;
+}
