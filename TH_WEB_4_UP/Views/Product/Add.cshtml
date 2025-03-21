@@ -4,8 +4,8 @@
     ViewData["Title"] = "Add Product";
 }
 
-<div class="form-container">
-    <h2 class="text-center text-danger">Add Product</h2>
+<div class="form-container add-product">
+    <h2 class="text-center text-success">Add Product</h2>
     <form asp-action="Add" enctype="multipart/form-data" class="needs-validation" novalidate>
         <div class="form-group">
             <label asp-for="Name" class="control-label"></label>
@@ -35,6 +35,6 @@
             <label class="control-label">Additional Images</label>
             <input type="file" asp-for="ImageUrls" multiple class="form-control-file" />
         </div>
-        <button type="submit" class="btn btn-primary">Add</button>
+        <button type="submit" class="btn btn-success">Add</button>
     </form>
 </div>

@@ -25,9 +25,28 @@ body {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    background-color: #f8f9fa;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.table {
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+    .table thead {
+        background-color: #b2ebf2; /* Light cyan header */
+    }
+
+    .table tbody tr:hover {
+        background-color: #e0f7fa; /* Light cyan hover */
+    }
+.add-product {
+    background-color: #e6f7e6; /* Light green background */
+}
+
+.update-product {
+    background-color: #fff3cd; /* Light yellow background */
 }
 
     .form-container h2 {
@@ -39,6 +58,11 @@ body {
     }
 
     .form-container .btn-primary {
+        width: 100%;
+        padding: 10px;
+        font-size: 18px;
+    }
+    .form-container .btn {
         width: 100%;
         padding: 10px;
         font-size: 18px;
@@ -60,6 +84,9 @@ body {
     display: flex;
     flex-direction: column;
     height: 100%;
+    background-color : #ffffff;
+    border-radius : 10px;
+    box-shadow : 0 0 10px rgba(0,0,0,0.1);
 }
 
     .card img {
@@ -77,6 +104,7 @@ body {
 .card-title {
     font-size: 1.25rem;
     font-weight: bold;
+    color : #007bff;
 }
 
 .card-text {
@@ -165,13 +193,13 @@ body {
     }
 
 .btn-info {
-    background-color: #17a2b8;
-    border-color: #17a2b8;
+    background-color: #00bcd4;
+    border-color: #00bcd4;
 }
 
     .btn-info:hover {
-        background-color: #138496;
-        border-color: #117a8b;
+        background-color: #0097a7;
+        border-color: #0097a7;
     }
 
 .btn-warning {
@@ -202,3 +230,19 @@ body {
     .card-text.text-danger {
         font-size: 1.1rem;
     }
+
+.product-details-container {
+    background-color: #e0f7fa; /* Light cyan background */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+    .product-details-container h2 {
+        margin-bottom: 20px;
+    }
+
+.product-image {
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
