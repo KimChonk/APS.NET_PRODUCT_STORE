@@ -1,0 +1,53 @@
+﻿@model TH_WEB_4_UP.Models.Product
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    ViewData["Title"] = "Update Product";
+}
+
+<div class="form-container update-product">
+    <h2 class="text-center text-warning">Update Product</h2>
+    <form asp-action="Update" enctype="multipart/form-data" class="needs-validation" novalidate>
+        <div class="form-group">
+            <label asp-for="Name" class="control-label"></label>
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Price" class="control-label"></label>
+            <input asp-for="Price" class="form-control" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Description" class="control-label"></label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="CategoryId" class="control-label"></label>
+            <select asp-for="CategoryId" asp-items="ViewBag.Categories" class="form-control"></select>
+            <span asp-validation-for="CategoryId" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="ImageUrl" class="control-label">Image</label>
+            <input type="file" asp-for="ImageUrl" class="form-control-file" />
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="@Model.ImageUrl" alt="@Model.Name" class="img-fluid mt-2" style="max-width: 200px;" />
+            }
+        </div>
+        <div class="form-group">
+            <label class="control-label">Additional Images</label>
+            <input type="file" asp-for="ImageUrls" multiple class="form-control-file" />
+            @if (Model.ImageUrls != null && Model.ImageUrls.Count > 0)
+            {
+                <div class="mt-2">
+                    @foreach (var imageUrl in Model.ImageUrls)
+                    {
+                        <img src="@imageUrl" alt="@Model.Name" class="img-fluid mr-2" style="max-width: 100px;" />
+                    }
+                </div>
+            }
+        </div>
+        <button type="submit" class="btn btn-warning">Update</button>
+    </form>
+</div>
