@@ -1,36 +1,65 @@
 ﻿@model IEnumerable<TH_WEB_4_UP.Models.Product>
-@{
-    ViewData["Title"] = "Products";
-}
 
-<h2 class="text-center text-danger">Products</h2>
-<a href="/Product/Add" class="button">
-    <span class="button__text">Add</span>
-    <span class="button__icon">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
-            <line y2="19" y1="5" x2="12" x1="12"></line>
-            <line y2="12" y1="12" x2="19" x1="5"></line>
-        </svg>
-    </span>
-</a>
-<div class="row product-row">
-    @foreach (var product in Model)
+<div class="container">
+    <h1 class="text-center text-danger mb-4">Products</h1>
+
+    @if (User.IsInRole(SD.Role_Admin))
     {
-        <div class="col-md-3 d-flex align-items-stretch">
-            <div class="card mb-4 product-card">
-                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name">
-                <div class="card-body d-flex flex-column">
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text">@product.Description</p>
-                    <p class="card-text text-danger font-weight-bold">@product.Price.ToString("C")</p>
-                    <a class="btn btn-info btn-sm mt-auto" href="/Product/Display/@product.Id">View</a>
-                    <a class="btn btn-warning btn-sm mt-2" href="/Product/Update/@product.Id">Edit</a>
-                    <form asp-action="Delete" method="post" class="mt-2">
-                        <input type="hidden" name="id" value="@product.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                    </form>
-                </div>
-            </div>
+        <div class="mb-3">
+            <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="btn btn-success">
+                <i class="fas fa-plus"></i> Add New Product
+            </a>
         </div>
     }
+
+    <div class="row">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-3 mb-4">
+                <div class="card h-100">
+                    <img src="@item.ImageUrl" class="card-img-top" alt="@item.Name" style="height: 200px; object-fit: cover;">
+                    <div class="card-body">
+                        <h5 class="card-title text-primary">@item.Name</h5>
+                        <p class="card-text">@item.Description</p>
+                        <p class="card-text text-danger fw-bold">@item.Price.ToString("N0") đ</p>
+                        
+                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-info w-100 mb-2">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+
+                        @if (User.IsInRole(SD.Role_Admin))
+                        {
+                            <a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" 
+                               class="btn btn-warning w-100 mb-2">
+                                <i class="fas fa-edit"></i> Edit
+                            </a>
+                            <a asp-area="Admin" asp-controller="Product" asp-action="Delete" asp-route-id="@item.Id" 
+                               class="btn btn-danger w-100">
+                                <i class="fas fa-trash"></i> Delete
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>
+
+@section Styles {
+    <style>
+        .card {
+            transition: transform 0.2s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .btn {
+            transition: all 0.3s;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+}

@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Quyền truy cập bị từ chối!";
+}
+
+<div class="text-center">
+    <div class="alert alert-danger mt-4">
+        <h2><i class="fas fa-exclamation-triangle"></i> @ViewData["Title"]</h2>
+        <p class="mt-3">Bạn không có quyền thực hiện thao tác này. Chỉ tài khoản Admin mới có quyền thêm, sửa, xóa sản phẩm.</p>
+        <p>Vui lòng liên hệ quản trị viên nếu bạn cần quyền truy cập cao hơn.</p>
+    </div>
+    <div class="mt-4">
+        <a href="javascript:history.back()" class="btn btn-primary">
+            <i class="fas fa-arrow-left"></i> Quay lại trang trước
+        </a>
+        <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">
+            <i class="fas fa-home"></i> Về trang sản phẩm
+        </a>
+    </div>
+</div>
+
+@section Styles {
+    <style type="text/css">
+        .alert {
+            border-radius: 8px;
+            padding: 2rem;
+            background-color: #fff3f3;
+            border: 1px solid #dc3545;
+        }
+        .fas {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #dc3545;
+        }
+        .btn {
+            margin: 0 5px;
+        }
+    </style>
+} 

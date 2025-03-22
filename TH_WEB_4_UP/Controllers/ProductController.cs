@@ -1,21 +1,39 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using TH_WEB_4_UP.Repository;
 using TH_WEB_4_UP.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TH_WEB_4_UP.Controllers
 {
+    [Authorize]
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
         private readonly ICategoryRepository _categoryRepository;
+
         public ProductController(IProductRepository productRepository, ICategoryRepository categoryRepository)
         {
             _productRepository = productRepository;
             _categoryRepository = categoryRepository;
         }
 
-        public async Task<IActionResult> Add()
+        public async Task<IActionResult> Index()
+        {
+            var products = await _productRepository.GetAllAsync();
+            return View(products);
+        }
+
+        public async Task<IActionResult> Details(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+            return View(product);
+        }
+
+        [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> Create()
         {
             var categories = await _categoryRepository.GetAllAsync();
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
@@ -23,8 +41,9 @@ namespace TH_WEB_4_UP.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(Product product, IFormFile
-imageUrl)
+        [Authorize(Roles = SD.Role_Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Product product, IFormFile imageUrl)
         {
             if (ModelState.IsValid)
             {
@@ -39,6 +58,55 @@ imageUrl)
             ViewBag.Categories = new SelectList(categories, "Id", "Name");
             return View(product);
         }
+
+        [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+            var categories = await _categoryRepository.GetAllAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            return View(product);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = SD.Role_Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Product product, IFormFile imageUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                if (imageUrl != null)
+                {
+                    product.ImageUrl = await SaveImage(imageUrl);
+                }
+                await _productRepository.UpdateAsync(product);
+                return RedirectToAction(nameof(Index));
+            }
+            var categories = await _categoryRepository.GetAllAsync();
+            ViewBag.Categories = new SelectList(categories, "Id", "Name");
+            return View(product);
+        }
+
+        [Authorize(Roles = SD.Role_Admin)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var product = await _productRepository.GetByIdAsync(id);
+            if (product == null)
+                return NotFound();
+            return View(product);
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [Authorize(Roles = SD.Role_Admin)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            await _productRepository.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
+        }
+
         private async Task<string> SaveImage(IFormFile image)
         {
             var savePath = Path.Combine("wwwroot/images", image.FileName);
@@ -47,97 +115,6 @@ imageUrl)
                 await image.CopyToAsync(fileStream);
             }
             return "/images/" + image.FileName;
-        }
-
-        public async Task<IActionResult> Index()
-        {
-            var products = await _productRepository.GetAllAsync();
-            return View(products);
-        }
-
-        public async Task<IActionResult> Display(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
-        public async Task<IActionResult> Update(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View(product);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Update(Product product, IFormFile imageUrl, List<IFormFile> imageUrls)
-        {
-            if (ModelState.IsValid)
-            {
-                var existingProduct = await _productRepository.GetByIdAsync(product.Id);
-                if (existingProduct == null)
-                {
-                    return NotFound();
-                }
-
-                if (imageUrl != null)
-                {
-                    product.ImageUrl = await SaveImage(imageUrl);
-                }
-                else
-                {
-                    product.ImageUrl = existingProduct.ImageUrl;
-                }
-
-                if (imageUrls != null && imageUrls.Count > 0)
-                {
-                    product.ImageUrls = new List<string>();
-                    foreach (var file in imageUrls)
-                    {
-                        product.ImageUrls.Add(await SaveImage(file));
-                    }
-                }
-                else
-                {
-                    product.ImageUrls = existingProduct.ImageUrls;
-                }
-
-                await _productRepository.UpdateAsync(product);
-                return RedirectToAction("Index");
-            }
-            var categories = await _categoryRepository.GetAllAsync();
-            ViewBag.Categories = new SelectList(categories, "Id", "Name");
-            return View(product);
-        }
-
-        public async Task<IActionResult> Delete(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            return View(product);
-        }
-
-        [HttpPost, ActionName("Delete")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-            await _productRepository.DeleteAsync(id);
-            return RedirectToAction("Index");
         }
     }
 }
