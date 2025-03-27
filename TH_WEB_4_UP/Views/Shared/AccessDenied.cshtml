@@ -1,38 +1,141 @@
 @{
-    ViewData["Title"] = "Quyền truy cập bị từ chối!";
+    ViewData["Title"] = "Từ chối truy cập";
 }
 
-<div class="text-center">
-    <div class="alert alert-danger mt-4">
-        <h2><i class="fas fa-exclamation-triangle"></i> @ViewData["Title"]</h2>
-        <p class="mt-3">Bạn không có quyền thực hiện thao tác này. Chỉ tài khoản Admin mới có quyền thêm, sửa, xóa sản phẩm.</p>
-        <p>Vui lòng liên hệ quản trị viên nếu bạn cần quyền truy cập cao hơn.</p>
-    </div>
-    <div class="mt-4">
-        <a href="javascript:history.back()" class="btn btn-primary">
-            <i class="fas fa-arrow-left"></i> Quay lại trang trước
-        </a>
-        <a asp-controller="Product" asp-action="Index" class="btn btn-secondary">
-            <i class="fas fa-home"></i> Về trang sản phẩm
-        </a>
-    </div>
-</div>
+<style>
+    .access-denied-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #f5f7ff 0%, #ffffff 100%);
+        padding: 2rem;
+    }
 
-@section Styles {
-    <style type="text/css">
-        .alert {
-            border-radius: 8px;
+    .access-denied-card {
+        background: white;
+        border-radius: 20px;
+        padding: 3rem;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 600px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .access-denied-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 5px;
+        background: linear-gradient(90deg, #ff1744, #ff4081);
+    }
+
+    .error-icon {
+        font-size: 5rem;
+        color: #ff1744;
+        margin-bottom: 1.5rem;
+        animation: pulse 2s infinite;
+    }
+
+    .access-denied-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #1d1d1f;
+        margin-bottom: 1rem;
+    }
+
+    .access-denied-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .home-button {
+        background: linear-gradient(135deg, #2962ff, #0039cb);
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .login-button {
+        background: linear-gradient(135deg, #ff1744, #ff4081);
+        color: white;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .home-button:hover, .login-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        color: white;
+    }
+
+    @@keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+        50% {
+            transform: scale(1.1);
+        }
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .access-denied-card {
             padding: 2rem;
-            background-color: #fff3f3;
-            border: 1px solid #dc3545;
         }
-        .fas {
+
+        .access-denied-title {
             font-size: 2rem;
-            margin-bottom: 1rem;
-            color: #dc3545;
         }
-        .btn {
-            margin: 0 5px;
+
+        .action-buttons {
+            flex-direction: column;
         }
-    </style>
-} 
+
+        .home-button, .login-button {
+            width: 100%;
+            text-align: center;
+        }
+    }
+</style>
+
+<div class="access-denied-container">
+    <div class="access-denied-card">
+        <i class="fas fa-exclamation-circle error-icon"></i>
+        <h1 class="access-denied-title">Quyền truy cập bị từ chối!</h1>
+        <p class="access-denied-message">
+            Xin lỗi, bạn không có quyền truy cập vào trang này. 
+            Để thực hiện thao tác này, bạn cần có quyền Admin hoặc đăng nhập với tài khoản có quyền phù hợp.
+        </p>
+        <div class="action-buttons">
+            <a href="/" class="home-button">
+                <i class="fas fa-home me-2"></i>Về trang chủ
+            </a>
+            <a href="/Identity/Account/Login" class="login-button">
+                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập
+            </a>
+        </div>
+    </div>
+</div> 
