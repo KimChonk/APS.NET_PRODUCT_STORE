@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TH_WEB_4_UP.Repository;
-using TH_WEB_4_UP.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using TH_WEB_4_UP.Models;
+using TH_WEB_4_UP.Repository;
 
-namespace TH_WEB_4_UP.Controllers
+namespace TH_WEB_4_UP.Areas.Admin.Controllers
 {
-    [Authorize]
+    [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IProductRepository _productRepository;
@@ -24,15 +25,6 @@ namespace TH_WEB_4_UP.Controllers
             return View(products);
         }
 
-        public async Task<IActionResult> Details(int id)
-        {
-            var product = await _productRepository.GetByIdAsync(id);
-            if (product == null)
-                return NotFound();
-            return View(product);
-        }
-
-        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> Create()
         {
             var categories = await _categoryRepository.GetAllAsync();
@@ -41,7 +33,6 @@ namespace TH_WEB_4_UP.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = SD.Role_Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Product product, IFormFile imageUrl)
         {
@@ -59,7 +50,6 @@ namespace TH_WEB_4_UP.Controllers
             return View(product);
         }
 
-        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> Edit(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -71,7 +61,6 @@ namespace TH_WEB_4_UP.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = SD.Role_Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Product product, IFormFile imageUrl)
         {
@@ -89,7 +78,6 @@ namespace TH_WEB_4_UP.Controllers
             return View(product);
         }
 
-        [Authorize(Roles = SD.Role_Admin)]
         public async Task<IActionResult> Delete(int id)
         {
             var product = await _productRepository.GetByIdAsync(id);
@@ -99,7 +87,6 @@ namespace TH_WEB_4_UP.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
-        [Authorize(Roles = SD.Role_Admin)]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
