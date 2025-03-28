@@ -1,0 +1,15 @@
+@using TH_WEB_4_UP.Extensions
+@{
+    var cart = Context.Session.GetObjectFromJson<ShoppingCart>("Cart") ?? new ShoppingCart();
+    var itemCount = cart.Items.Sum(i => i.Quantity);
+}
+
+<a asp-controller="ShoppingCart" asp-action="Index" class="nav-link position-relative">
+    <i class="fas fa-shopping-cart"></i>
+    @if (itemCount > 0)
+    {
+        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+            @itemCount
+        </span>
+    }
+</a> 

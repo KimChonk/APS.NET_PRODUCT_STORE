@@ -58,24 +58,44 @@
         }
 
         .nav-link {
-            color: rgba(255,255,255,0.9) !important;
+            color: white !important;
             font-weight: 500;
-            font-size: 0.95rem;
+            padding: 0.5rem 1rem;
             transition: all 0.3s ease;
-            padding: 0.4rem 1rem;
-            border-radius: 6px;
-            margin: 0 0.2rem;
+            position: relative;
         }
 
         .nav-link:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-1px);
+            color: var(--warning-color) !important;
         }
 
-        .nav-link i {
-            font-size: 0.9rem;
-            margin-right: 0.4rem;
-            opacity: 0.9;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background-color: var(--warning-color);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 80%;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.35em 0.65em;
+        }
+
+        .position-relative {
+            position: relative !important;
+        }
+
+        .translate-middle {
+            transform: translate(-50%, -50%) !important;
         }
 
         .navbar-toggler {
@@ -309,7 +329,12 @@
                             </a>
                         </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <ul class="navbar-nav">
+                        <li class="nav-item me-3">
+                            <partial name="_CartButton" />
+                        </li>
+                        <partial name="_LoginPartial" />
+                    </ul>
                 </div>
             </div>
         </nav>

@@ -1,0 +1,371 @@
+﻿@model ShoppingCart
+
+<div class="container mt-4">
+	<div class="cart-header text-center mb-4">
+		<h2><i class="fas fa-shopping-cart me-2"></i>Giỏ hàng của bạn</h2>
+		<p class="text-muted">Quản lý sản phẩm trong giỏ hàng của bạn</p>
+	</div>
+
+	@if (Model.Items.Count == 0)
+	{
+		<div class="empty-cart text-center">
+			<i class="fas fa-shopping-basket fa-3x mb-3 text-muted"></i>
+			<p class="lead">Giỏ hàng của bạn đang trống</p>
+			<a asp-controller="Product" asp-action="Index" class="btn btn-primary btn-lg">
+				<i class="fas fa-shopping-bag me-2"></i>Tiếp tục mua sắm
+			</a>
+		</div>
+	}
+	else
+	{
+		<div class="cart-container">
+			<div class="card">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover align-middle">
+							<thead>
+								<tr>
+									<th>Sản phẩm</th>
+									<th>Số lượng</th>
+									<th>Đơn giá</th>
+									<th>Tổng</th>
+									<th></th>
+								</tr>
+							</thead>
+							<tbody>
+								@foreach (var item in Model.Items)
+								{
+									<tr data-price="@item.Price" class="cart-item">
+										<td>
+											<div class="d-flex align-items-center">
+												<div class="product-name">
+													<h6 class="mb-0">@item.Name</h6>
+												</div>
+											</div>
+										</td>
+										<td>
+											<div class="quantity-controls">
+												<button type="button" class="quantity-btn minus" 
+														onclick="updateQuantity(this, -1, @item.ProductId)">
+													<i class="fas fa-minus"></i>
+												</button>
+												<input type="number" class="quantity-input" 
+													   value="@item.Quantity" min="1" max="99"
+													   onchange="updateQuantityInput(this, @item.ProductId)">
+												<button type="button" class="quantity-btn plus" 
+														onclick="updateQuantity(this, 1, @item.ProductId)">
+													<i class="fas fa-plus"></i>
+												</button>
+											</div>
+										</td>
+										<td class="price">@item.Price.ToString("N0") đ</td>
+										<td class="item-total">@((item.Price * item.Quantity).ToString("N0")) đ</td>
+										<td>
+											<a asp-action="RemoveFromCart" asp-route-productId="@item.ProductId" 
+											   class="btn btn-danger btn-sm delete-btn">
+												<i class="fas fa-trash"></i>
+											</a>
+										</td>
+									</tr>
+								}
+							</tbody>
+							<tfoot>
+								<tr>
+									<td colspan="3" class="text-end"><strong>Tổng cộng:</strong></td>
+									<td id="cart-total" class="total-amount">
+										<strong>@(Model.Items.Sum(i => i.Price * i.Quantity).ToString("N0")) đ</strong>
+									</td>
+									<td></td>
+								</tr>
+							</tfoot>
+						</table>
+					</div>
+
+					<div class="cart-actions d-flex justify-content-between mt-4">
+						<a asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary">
+							<i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
+						</a>
+						<a asp-action="Checkout" class="btn btn-success">
+							<i class="fas fa-check me-2"></i>Thanh toán
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	}
+</div>
+
+@section Scripts {
+	<script>
+		function formatCurrency(amount) {
+			return new Intl.NumberFormat('vi-VN').format(amount) + ' đ';
+		}
+
+		function updateCartTotal() {
+			let total = 0;
+			document.querySelectorAll('tbody tr').forEach(row => {
+				const price = parseFloat(row.dataset.price);
+				const quantity = parseInt(row.querySelector('.quantity-input').value);
+				total += price * quantity;
+			});
+			document.getElementById('cart-total').innerHTML = '<strong>' + formatCurrency(total) + '</strong>';
+		}
+
+		function updateItemTotal(row) {
+			const price = parseFloat(row.dataset.price);
+			const quantity = parseInt(row.querySelector('.quantity-input').value);
+			const total = price * quantity;
+			row.querySelector('.item-total').textContent = formatCurrency(total);
+			updateCartTotal();
+		}
+
+		async function updateQuantity(btn, change, productId) {
+			const row = btn.closest('tr');
+			const input = row.querySelector('.quantity-input');
+			const currentValue = parseInt(input.value);
+			const newValue = currentValue + change;
+			
+			if (newValue >= 1 && newValue <= 99) {
+				input.value = newValue;
+				updateItemTotal(row);
+				
+				try {
+					const response = await fetch(`/ShoppingCart/UpdateQuantity?productId=${productId}&quantity=${newValue}`, {
+						method: 'POST'
+					});
+					
+					if (!response.ok) {
+						throw new Error('Không thể cập nhật số lượng');
+					}
+				} catch (error) {
+					console.error('Lỗi:', error);
+					alert('Có lỗi xảy ra khi cập nhật số lượng');
+				}
+			}
+		}
+
+		async function updateQuantityInput(input, productId) {
+			const row = input.closest('tr');
+			let value = parseInt(input.value);
+			
+			if (isNaN(value) || value < 1) value = 1;
+			if (value > 99) value = 99;
+			
+			input.value = value;
+			updateItemTotal(row);
+			
+			try {
+				const response = await fetch(`/ShoppingCart/UpdateQuantity?productId=${productId}&quantity=${value}`, {
+					method: 'POST'
+				});
+				
+				if (!response.ok) {
+					throw new Error('Không thể cập nhật số lượng');
+				}
+			} catch (error) {
+				console.error('Lỗi:', error);
+				alert('Có lỗi xảy ra khi cập nhật số lượng');
+			}
+		}
+	</script>
+}
+
+@section Styles {
+	<style>
+		/* Cart Header */
+		.cart-header {
+			margin-bottom: 2rem;
+		}
+		.cart-header h2 {
+			color: #2c3e50;
+			font-weight: 600;
+			margin-bottom: 0.5rem;
+		}
+
+		/* Empty Cart */
+		.empty-cart {
+			padding: 3rem 1rem;
+			background: #f8f9fa;
+			border-radius: 10px;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		}
+		.empty-cart i {
+			color: #6c757d;
+		}
+
+		/* Cart Container */
+		.cart-container {
+			background: white;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+		}
+
+		/* Table Styling */
+		.table {
+			margin-bottom: 0;
+		}
+		.table th {
+			background-color: #f8f9fa;
+			border-bottom: 2px solid #dee2e6;
+			color: #495057;
+			font-weight: 600;
+			padding: 1rem;
+		}
+		.table td {
+			padding: 1rem;
+			vertical-align: middle;
+		}
+		.cart-item {
+			transition: background-color 0.3s ease;
+		}
+		.cart-item:hover {
+			background-color: #f8f9fa;
+		}
+
+		/* Product Name */
+		.product-name h6 {
+			color: #2c3e50;
+			font-weight: 500;
+			margin: 0;
+		}
+
+		/* Price Styling */
+		.price, .item-total {
+			font-weight: 500;
+			color: #2c3e50;
+		}
+		.total-amount {
+			color: #e74c3c;
+			font-size: 1.2rem;
+		}
+
+		/* Delete Button */
+		.delete-btn {
+			padding: 0.4rem 0.8rem;
+			border-radius: 20px;
+			transition: all 0.3s ease;
+		}
+		.delete-btn:hover {
+			transform: scale(1.1);
+			background-color: #dc3545;
+			border-color: #dc3545;
+		}
+
+		/* Cart Actions */
+		.cart-actions .btn {
+			padding: 0.8rem 1.5rem;
+			border-radius: 25px;
+			font-weight: 500;
+			transition: all 0.3s ease;
+		}
+		.cart-actions .btn:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+		}
+
+		/* Quantity Controls */
+		.quantity-controls {
+			display: flex;
+			align-items: center;
+			background: #f8f9fa;
+			border-radius: 25px;
+			padding: 5px;
+			width: fit-content;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+		}
+
+		.quantity-btn {
+			width: 30px;
+			height: 30px;
+			border: none;
+			border-radius: 50%;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: white;
+			color: #333;
+			font-size: 0.8rem;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		}
+
+		.quantity-btn:hover {
+			background: #e9ecef;
+			transform: translateY(-1px);
+			box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+		}
+
+		.quantity-btn:active {
+			transform: translateY(1px);
+			box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+		}
+
+		.quantity-btn.minus {
+			margin-right: 8px;
+		}
+
+		.quantity-btn.plus {
+			margin-left: 8px;
+		}
+
+		.quantity-input {
+			width: 45px;
+			text-align: center;
+			border: 1px solid #dee2e6;
+			border-radius: 15px;
+			padding: 4px;
+			font-size: 0.9rem;
+			background: white;
+			outline: none;
+			transition: all 0.3s ease;
+		}
+
+		.quantity-input:focus {
+			border-color: #80bdff;
+			box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+		}
+
+		.quantity-input::-webkit-inner-spin-button,
+		.quantity-input::-webkit-outer-spin-button {
+			-webkit-appearance: none;
+			margin: 0;
+		}
+
+		/* Hover effect for the entire control */
+		.quantity-controls:hover {
+			background: #e9ecef;
+		}
+
+		/* Responsive adjustments */
+		@@media (max-width: 768px) {
+			.cart-header {
+				margin-bottom: 1.5rem;
+			}
+			.cart-header h2 {
+				font-size: 1.5rem;
+			}
+			.table th, .table td {
+				padding: 0.75rem;
+			}
+			.quantity-controls {
+				padding: 3px;
+			}
+			.quantity-btn {
+				width: 25px;
+				height: 25px;
+			}
+			.quantity-input {
+				width: 35px;
+				font-size: 0.8rem;
+			}
+			.cart-actions {
+				flex-direction: column;
+				gap: 1rem;
+			}
+			.cart-actions .btn {
+				width: 100%;
+			}
+		}
+	</style>
+}
